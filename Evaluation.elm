@@ -1,10 +1,13 @@
-import Html exposing (Html, Attribute, br, div, input, label, span, text)
+import Html exposing (Html, Attribute, br, div, input, label, span, text, node, p)
 import Html.App exposing (beginnerProgram)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onCheck)
+import Basics exposing (..)
+import List exposing (..)
+import Dropdown
 
 --main : Element
-main = beginnerProgram { model = model, view = view, update = update }
+main = beginnerProgram { model = init, view = view, update = update }
 
 -- MODEL
 
@@ -15,37 +18,7 @@ type Evaluation = NotValid
                 | ValidImportant
                 | ValidVeryImportant
 
-type alias Model = Maybe Evaluation
-
-model = Nothing
-
-
-
-
--- UPDATE
-
-type Msg =
-  Switch Evaluation
-
-update : Msg -> Model -> Model
-update (Switch newStyle) model =
-  { model | style = newStyle }
-
-
--- VIEW
-
-
-view : Model -> Html Msg
---view model =
---  div []
---    [ span [] [text "Hello, how are you?!"]
---    , radio Red "red" model
---    , radio Underline "underline" model
---    , radio Bold "bold" model
---    ]
-
-view model =
-  dropDown []
+nameMap =
     [ ("",                      Nothing)
     , ("Not valid",             Just NotValid)
     , ("Don't know",            Just DontKnow)
@@ -55,15 +28,42 @@ view model =
     , ("Valid, very important", Just ValidVeryImportant)
     ]
 
+type alias Model = Dropdown.Dropdown
 
-radio : Style -> String -> Model -> Html Msg
-radio style name model =
-  let
-    isSelected =
-      model.style == style
-  in
-    label []
-      [ br [] []
-      , input [ type' "radio", checked isSelected, onCheck (\_ -> Switch style) ] []
-      , text name
-      ]
+init = Dropdown.init "" (map fst nameMap) "Evaluation"
+
+-- UPDATE
+
+--type Msg =
+--  Switch Evaluation
+
+update : Dropdown.Msg -> Model -> Model
+update = Dropdown.update
+
+-- VIEW
+
+
+--view : Model -> Html Dropdown.Msg
+--view = Dropdown.renderDropdownHtml 
+
+view : Dropdown.Dropdown -> Html Dropdown.Msg
+view model =
+    div
+    []
+    [
+        node "link"
+        [
+            rel "stylesheet",
+            href "../Dropdown.css"
+        ] 
+        [],
+        Dropdown.renderDropdownHtml model
+    ]
+
+
+-- OTHER
+divStyles : List (String, String)
+divStyles =
+    [
+        ("margin", "20px 0 0 20px")               
+    ]
