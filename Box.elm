@@ -68,6 +68,8 @@ update msg model = case msg of
 view : Model -> Html Msg
 view model =
     div []
-        [text model.box.title
+        [span [] [text <| toString model.box.typ]
+        ,span [] [text <| toString model.box.id]
+        ,span [] [text model.box.title]
         ,Html.App.map EvaluationMsg <| Evaluation.view model.evaluation
         ]
